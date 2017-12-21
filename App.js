@@ -14,14 +14,14 @@ import {
 import { StackNavigator } from 'react-navigation';
 
 import Home from './src/screens/Home'
-import MapView from './src/screens/MapView'
+import Map from './src/screens/Map'
 
 const App =  StackNavigator({
   Home: {
     screen: Home
   },
   MapView: {
-    screen: MapView
+    screen: Map
   }
 });
 

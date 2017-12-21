@@ -12,11 +12,13 @@
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+@import GoogleMaps;
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [GMSServices provideAPIKey:@"AIzaSyA7Os3aZz2jfUB0G7PzJJRsTjm6FVYux6s"]; 
   NSURL *jsCodeLocation;
 
   [AppCenterReactNative register];  // Initialize AppCenter 
