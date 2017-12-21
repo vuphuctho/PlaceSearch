@@ -14,9 +14,10 @@ const SPACE = 0.01;
 
 export default class Map extends Component {
   static navigationOptions = {
-    header: null
+    title: 'Map'
   }
   render() {
+    const { navigate } = this.props.navigation
     return (
       <View style={styles.container}>
         <MapView
@@ -33,7 +34,9 @@ export default class Map extends Component {
           ref={map => {this.map = map;}} >
         </MapView>
         <View style={styles.inputContainer}>
-          <TouchableOpacity style={styles.inputTop}>
+          <TouchableOpacity
+            style={styles.inputTop}
+            onPress={() => navigate('Search')}>
             <Text style={styles.inputText}>Enter start point</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.inputBottom}>
@@ -66,7 +69,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderStyle: 'solid',
-    borderBottomColor: '#000',
+    borderBottomColor: '#e2e2e2',
     borderBottomWidth: 1
   },
   inputBottom: {
@@ -76,6 +79,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
   },
   inputText: {
-    fontSize: 20
   }
 });

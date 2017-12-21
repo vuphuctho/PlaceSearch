@@ -15,6 +15,7 @@ import { StackNavigator } from 'react-navigation';
 
 import Home from './src/screens/Home'
 import Map from './src/screens/Map'
+import Search from './src/screens/Search'
 
 const App =  StackNavigator({
   Home: {
@@ -22,6 +23,9 @@ const App =  StackNavigator({
   },
   MapView: {
     screen: Map
+  },
+  Search: {
+    screen: Search
   }
 });
 
