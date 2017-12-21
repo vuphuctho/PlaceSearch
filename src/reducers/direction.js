@@ -5,7 +5,7 @@ import * as types from '../actionTypes/direction';
 const initialState = {
   origin: {},
   destination: {},
-  direction: {},
+  directionPolyline: '',
   currentSearch: ''
 }
 
@@ -23,5 +23,10 @@ export default handleActions({
   [types.SET_CURRENT_SEARCH]: (state, { payload }) => ({
     ...state,
     currentSearch: payload
+  }),
+
+  [types.SET_DIRECTION]: (state, { payload }) => ({
+    ...state,
+    directionPolyline: payload
   })
 }, initialState)

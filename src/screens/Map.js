@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native'
+import { View, TouchableOpacity, Text, StyleSheet, Dimensions, Alert } from 'react-native'
 
 import { get, isEmpty } from 'lodash'
 import { connect } from 'react-redux';
@@ -16,13 +16,48 @@ const LATITUDE_DELTA = 0.003;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const SPACE = 0.01;
 
+const getRouteCoords = (routes, coords = []) => {
+  const steps = get(routes, '0.legs.0.steps', [])
+  const len = steps.length
+  coords = steps.map(step => ({
+    latitude: step.start_location.lat,
+    longitude: step.start_location.lng
+  }))
+  coords.push({
+    latitude: steps[len - 1].end_location.lat,
+    longitude: steps[len - 1].end_location.lng
+  })
+  return coords
+}
+
 class Map extends Component {
   static navigationOptions = {
     title: 'Map'
   }
   constructor(props) {
     super(props)
+    this.state = { polylineCoords: [] }
     this.openSearch = this.openSearch.bind(this)
+    this._fetchDirection = this._fetchDirection.bind(this)
+  }
+  componentWillReceiveProps(nextProps) {
+    const { originId, destId } = nextProps
+    if (!isEmpty(originId) && !isEmpty(destId)) {
+      this._fetchDirection(originId, destId)
+    }
+  }
+  _fetchDirection(originId, destId) {
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=place_id:${originId}&destination=place_id:${destId}&mode=walking&key=AIzaSyA7Os3aZz2jfUB0G7PzJJRsTjm6FVYux6s`;
+    fetch(url, { method: 'GET' })
+      .then(resp => {
+        if (resp.ok) {
+          const { status, routes } = JSON.parse(get(resp, '_bodyText'))
+          if (status === 'OK') {
+            const coords = getRouteCoords(routes)
+            this.setState({ polylineCoords: coords })
+          }
+        }
+      }).catch(e => { console.log(e)})
   }
   openSearch(target) {
     const { setCurrentSearch } = this.props
@@ -31,6 +66,7 @@ class Map extends Component {
     navigate('Search')
   }
   render() {
+    const { polylineCoords } = this.state
     const {
       originName = '',
       destName = '',
@@ -60,6 +96,12 @@ class Map extends Component {
           {!isEmpty(destCoord) &&
             <MapView.Marker coordinate={destCoord} pinColor='#3498db'/>
           }
+          {!isEmpty(polylineCoords) &&
+            <MapView.Polyline
+              coordinates={polylineCoords}
+              strokeColor='#3498db'
+              strokeWidth={2} />
+          }
         </MapView>
         <View style={styles.inputContainer}>
           <TouchableOpacity
@@ -88,7 +130,9 @@ const mapState = state => ({
   destCoord: isEmpty(state, 'direction.destination') ? {} : {
     latitude: get(state, 'direction.destination.geometry.location.lat', 0),
     longitude: get(state, 'direction.destination.geometry.location.lng', 0)
-  }
+  },
+  originId: get(state, 'direction.origin.place_id', ''),
+  destId: get(state, 'direction.destination.place_id', '')
 })
 
 const mapDispatch = dispatch => ({
