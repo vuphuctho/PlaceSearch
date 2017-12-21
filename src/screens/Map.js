@@ -31,9 +31,14 @@ class Map extends Component {
     navigate('Search')
   }
   render() {
-    const { origin, destination } = this.props
-    originText = isEmpty(origin) ? 'Enter start point' : 'Nah'
-    destinationText = isEmpty(destination) ? 'Enter destination' : 'Nah'
+    const {
+      originName = '',
+      destName = '',
+      originCoord = {},
+      destCoord = {}
+    } = this.props
+    originText = isEmpty(originName) ? 'Enter start point' : originName
+    destinationText = isEmpty(destName) ? 'Enter destination' : destName
     const { navigate } = this.props.navigation
     return (
       <View style={styles.container}>
@@ -49,6 +54,12 @@ class Map extends Component {
           showsIndoors={true}
           showsIndoorLevelPicker={false}
           ref={map => {this.map = map;}} >
+          {!isEmpty(originCoord) &&
+            <MapView.Marker coordinate={originCoord} />
+          }
+          {!isEmpty(destCoord) &&
+            <MapView.Marker coordinate={destCoord} pinColor='#3498db'/>
+          }
         </MapView>
         <View style={styles.inputContainer}>
           <TouchableOpacity
@@ -68,8 +79,16 @@ class Map extends Component {
 }
 
 const mapState = state => ({
-  origin: get(state, 'direction.origin', {}),
-  destination: get(state, 'direction.destination', {})
+  originName: get(state, 'direction.origin.name', ''),
+  destName: get(state, 'direction.destination.name', ''),
+  originCoord: isEmpty(state, 'direction.origin') ? {} : {
+    latitude: get(state, 'direction.origin.geometry.location.lat', 0),
+    longitude: get(state, 'direction.origin.geometry.location.lng', 0)
+  },
+  destCoord: isEmpty(state, 'direction.destination') ? {} : {
+    latitude: get(state, 'direction.destination.geometry.location.lat', 0),
+    longitude: get(state, 'direction.destination.geometry.location.lng', 0)
+  }
 })
 
 const mapDispatch = dispatch => ({
