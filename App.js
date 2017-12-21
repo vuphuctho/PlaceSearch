@@ -12,12 +12,15 @@ import {
   View
 } from 'react-native';
 import { StackNavigator } from 'react-navigation';
+import { Provider } from 'react-redux'
+
+import store from './src/store'
 
 import Home from './src/screens/Home'
 import Map from './src/screens/Map'
 import Search from './src/screens/Search'
 
-const App =  StackNavigator({
+const AppNavigator =  StackNavigator({
   Home: {
     screen: Home
   },
@@ -28,5 +31,15 @@ const App =  StackNavigator({
     screen: Search
   }
 });
+
+class App extends Component {
+  render() {
+    return (
+      <Provider store={store}>
+        <AppNavigator />
+      </Provider>
+    )
+  }
+}
 
 export default App

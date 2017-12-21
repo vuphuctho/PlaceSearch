@@ -10,11 +10,16 @@
   },
   "dependencies": {
     "appcenter": "^1.1.0",
+    "fuse.js": "^3.2.0",
+    "lodash": "^4.17.4",
     "react": "16.0.0",
     "react-native": "0.51.0",
     "react-native-autocomplete-input": "^3.4.0",
     "react-native-maps": "prabhusengal/react-native-maps",
-    "react-navigation": "^1.0.0-beta.22"
+    "react-navigation": "^1.0.0-beta.22",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-actions": "^2.2.1"
   },
   "devDependencies": {
     "babel-jest": "22.0.3",

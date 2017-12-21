@@ -1,7 +1,11 @@
 import React, { Component } from 'react'
 import { View, TouchableOpacity, Text, StyleSheet, Dimensions } from 'react-native'
 
+import { get, isEmpty } from 'lodash'
+import { connect } from 'react-redux';
 import MapView from 'react-native-maps';
+
+import { setCurrentSearch } from '../actions/direction'
 
 const { width, height } = Dimensions.get('window');
 
@@ -12,11 +16,24 @@ const LATITUDE_DELTA = 0.003;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const SPACE = 0.01;
 
-export default class Map extends Component {
+class Map extends Component {
   static navigationOptions = {
     title: 'Map'
   }
+  constructor(props) {
+    super(props)
+    this.openSearch = this.openSearch.bind(this)
+  }
+  openSearch(target) {
+    const { setCurrentSearch } = this.props
+    const { navigate } = this.props.navigation
+    setCurrentSearch(target)
+    navigate('Search')
+  }
   render() {
+    const { origin, destination } = this.props
+    originText = isEmpty(origin) ? 'Enter start point' : 'Nah'
+    destinationText = isEmpty(destination) ? 'Enter destination' : 'Nah'
     const { navigate } = this.props.navigation
     return (
       <View style={styles.container}>
@@ -36,17 +53,31 @@ export default class Map extends Component {
         <View style={styles.inputContainer}>
           <TouchableOpacity
             style={styles.inputTop}
-            onPress={() => navigate('Search')}>
-            <Text style={styles.inputText}>Enter start point</Text>
+            onPress={() => this.openSearch('origin')}>
+            <Text style={styles.inputText}>{originText}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.inputBottom}>
-            <Text style={styles.inputText}>Enter destination</Text>
+          <TouchableOpacity
+            style={styles.inputBottom}
+            onPress={() => this.openSearch('destination')}>
+            <Text style={styles.inputText}>{destinationText}</Text>
           </TouchableOpacity>
         </View>
       </View>
     )
   }
 }
+
+const mapState = state => ({
+  origin: get(state, 'direction.origin', {}),
+  destination: get(state, 'direction.destination', {})
+})
+
+const mapDispatch = dispatch => ({
+  setCurrentSearch: (target) => { dispatch(setCurrentSearch(target))
+  }
+})
+
+export default connect(mapState, mapDispatch)(Map)
 
 const styles = StyleSheet.create({
   container: {
